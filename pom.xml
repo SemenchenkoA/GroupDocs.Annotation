@@ -37,23 +37,6 @@
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>build-helper-maven-plugin</artifactId>
                     <version>3.3.0</version>
-                    <executions>
-                        <execution>
-                            <id>add-resource</id>
-                            <phase>generate-resources</phase>
-                            <goals>
-                                <goal>add-resource</goal>
-                            </goals>
-                            <configuration>
-                                <resources>
-                                    <resource>
-                                        <directory>src/resources</directory>
-                                        <targetPath>json</targetPath>
-                                    </resource>
-                                </resources>
-                            </configuration>
-                        </execution>
-                    </executions>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -77,33 +60,12 @@
                     </executions>
                     <configuration>
                         <mainClass>com.sa.runner.Runner</mainClass>
-                        <arguments>
-                            <argument>argument1</argument>
-                        </arguments>
-                        <systemProperties>
-                            <systemProperty>
-                                <key>myproperty</key>
-                                <value>myvalue</value>
-                            </systemProperty>
-                        </systemProperties>
                     </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-resources-plugin</artifactId>
                     <version>3.3.0</version>
-                    <configuration>
-                        <outputDirectory>output-resources</outputDirectory>
-                        <resources>
-                            <resource>
-                                <directory>input-resources</directory>
-                                <excludes>
-                                    <exclude>*.png</exclude>
-                                </excludes>
-                                <filtering>true</filtering>
-                            </resource>
-                        </resources>
-                    </configuration>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
@@ -117,9 +79,6 @@
                             </goals>
                             <configuration>
                                 <classifier>client</classifier>
-                                <includes>
-                                    <include>**/client/*</include>
-                                </includes>
                             </configuration>
                         </execution>
                     </executions>
@@ -132,10 +91,6 @@
                         <includes>
                             <include>com.sa.runner.CommonTest</include>
                         </includes>
-                        <excludes>
-                            <exclude>**/TestCircle.java</exclude>
-                            <exclude>**/TestSquare.java</exclude>
-                        </excludes>
                     </configuration>
                 </plugin>
                 <plugin>
