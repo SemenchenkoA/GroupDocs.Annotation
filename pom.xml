@@ -7,19 +7,17 @@
     <groupId>com.mycompany.app</groupId>
     <artifactId>my-app</artifactId>
     <version>1.0-SNAPSHOT</version>
+    <dependencies>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
+    </dependencies>
 
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
     </properties>
-
-    <repositories>
-        <repository>
-            <id>GroupDocsJavaAPI</id>
-            <name>GroupDocs Java API</name>
-            <url>http://repository.groupdocs.com/repo/</url>
-        </repository>
-    </repositories>
 
     <dependencyManagement>
         <dependencies>
@@ -28,12 +26,6 @@
                 <artifactId>junit</artifactId>
                 <version>4.12</version>
                 <scope>test</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>com.groupdocs</groupId>
-                <artifactId>groupdocs-annotation</artifactId>
-                <version>21.7</version>
             </dependency>
         </dependencies>
     </dependencyManagement>
@@ -84,7 +76,7 @@
                         </execution>
                     </executions>
                     <configuration>
-                        <mainClass>com.example.Main</mainClass>
+                        <mainClass>com.sa.runner.Runner</mainClass>
                         <arguments>
                             <argument>argument1</argument>
                         </arguments>
@@ -138,7 +130,7 @@
                     <version>3.0.0-M7</version>
                     <configuration>
                         <includes>
-                            <include>Sample.java</include>
+                            <include>com.sa.runner.CommonTest</include>
                         </includes>
                         <excludes>
                             <exclude>**/TestCircle.java</exclude>
