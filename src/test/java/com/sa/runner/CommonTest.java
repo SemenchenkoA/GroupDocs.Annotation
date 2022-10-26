@@ -7,4 +7,10 @@ public class CommonTest {
     public void testMain(){
         Runner.main(null);
     }
+
+    @Test
+    public void testDoubleMain(){
+        Runner.main(null);
+        Runner.main(null);
+    }
 }
