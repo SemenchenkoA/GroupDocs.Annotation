@@ -78,7 +78,7 @@
                                 <goal>jar</goal>
                             </goals>
                             <configuration>
-                                <classifier>client</classifier>
+                                <classifier>from-jar-plugin</classifier>
                             </configuration>
                         </execution>
                     </executions>
@@ -104,9 +104,14 @@
                                 <goal>shade</goal>
                             </goals>
                             <configuration>
+                                <artifactSet>
+                                    <includes>
+                                        <include>com.sa.runner.*</include>
+                                    </includes>
+                                </artifactSet>
                                 <transformers>
                                     <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                                        <mainClass>org.sonatype.haven.HavenCli</mainClass>
+                                        <mainClass>com.sa.runner.Runner</mainClass>
                                     </transformer>
                                 </transformers>
                             </configuration>
@@ -117,31 +122,24 @@
                     <groupId>org.sonatype.plugins</groupId>
                     <artifactId>jarjar-maven-plugin</artifactId>
                     <version>1.9</version>
+                    <configuration>
+                        <input>{classes}</input>
+                        <output>${project.build.directory}/classes-shaded</output>
+                        <overwrite>true</overwrite>
+                        <skipManifest>true</skipManifest>
+                        <rules>
+                            <rule>
+                                <pattern>com.sa.runner.*</pattern>
+                                <result>ta.mk.go.$@1</result>
+                            </rule>
+                        </rules>
+                    </configuration>
                     <executions>
                         <execution>
                             <phase>package</phase>
                             <goals>
                                 <goal>jarjar</goal>
                             </goals>
-                            <configuration>
-                                <includes>
-                                    <include>asm:asm</include>
-                                    <include>org.sonatype.sisu.inject:cglib</include>
-                                </includes>
-                                <rules>
-                                    <rule>
-                                        <pattern>org.objectweb.asm.**</pattern>
-                                        <result>com.google.inject.internal.asm.@1</result>
-                                    </rule>
-                                    <rule>
-                                        <pattern>net.sf.cglib.**</pattern>
-                                        <result>com.google.inject.internal.cglib.@1</result>
-                                    </rule>
-                                    <keep>
-                                        <pattern>com.google.inject.**</pattern>
-                                    </keep>
-                                </rules>
-                            </configuration>
                         </execution>
                     </executions>
                 </plugin>
@@ -178,43 +176,39 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-jarsigner-plugin</artifactId>
                     <version>3.0.0</version>
-                    <executions>
-                        <execution>
-                            <id>sign</id>
-                            <goals>
-                                <goal>sign</goal>
-                            </goals>
-                        </execution>
-                        <execution>
-                            <id>verify</id>
-                            <goals>
-                                <goal>verify</goal>
-                            </goals>
-                        </execution>
-                    </executions>
                 </plugin>
                 <plugin>
                     <groupId>com.github.wvengen</groupId>
                     <artifactId>proguard-maven-plugin</artifactId>
-                    <executions>
-                        <execution>
-                            <phase>package</phase>
-                            <goals>
-                                <goal>proguard</goal>
-                            </goals>
-                        </execution>
-                    </executions>
+                    <version>2.6.0</version>
                     <configuration>
                         <obfuscate>true</obfuscate>
                         <injar>${project.build.finalName}.jar</injar>
-                        <outjar>${project.build.finalName}-small.jar</outjar>
+                        <outjar>${project.build.finalName}-proguard-result.jar</outjar>
                         <outputDirectory>${project.build.directory}</outputDirectory>
                         <proguardInclude>${basedir}/proguard.conf</proguardInclude>
                         <libs>
                             <lib>${java.home}/lib/rt.jar</lib>
                             <lib>${java.home}/lib/jsse.jar</lib>
                         </libs>
+                        <options>
+                            <option>-allowaccessmodification</option>
+                            <option>-repackageclasses</option>
+                            <option>-keep public class com.sa.runner.Runner {
+                                    *;
+                                }
+                            </option>
+                        </options>
                     </configuration>
+                    <executions>
+                        <execution>
+                            <id>pro</id>
+                            <phase>package</phase>
+                            <goals>
+                                <goal>proguard</goal>
+                            </goals>
+                        </execution>
+                    </executions>
                 </plugin>
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
