@@ -12,6 +12,12 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.aspose</groupId>
+            <artifactId>aspose-note</artifactId>
+            <version>22.9</version>
+            <classifier>jdk17</classifier>
+        </dependency>
     </dependencies>
 
     <properties>
@@ -27,8 +33,33 @@
                 <version>4.12</version>
                 <scope>test</scope>
             </dependency>
+            <dependency>
+                <groupId>com.aspose</groupId>
+                <artifactId>aspose-note</artifactId>
+                <version>22.9</version>
+                <classifier>jdk17</classifier>
+            </dependency>
         </dependencies>
     </dependencyManagement>
+
+
+    <repositories>
+        <repository>
+            <id>AsposeJavaAPI</id>
+            <name>Aspose Java API</name>
+            <url>https://releases.aspose.com/java/repo/</url>
+        </repository>
+<!--        <repository>-->
+<!--            <id>GroupDocsJavaAPI</id>-->
+<!--            <name>GroupDocs Java API</name>-->
+<!--            <url>https://artifact.groupdocs.com/repo/</url>-->
+<!--        </repository>-->
+<!--        <repository>-->
+<!--            <id>maven-central</id>-->
+<!--            <url>https://repo1.maven.org/maven2</url>-->
+<!--        </repository>-->
+    </repositories>
+
 
     <build>
         <pluginManagement>
