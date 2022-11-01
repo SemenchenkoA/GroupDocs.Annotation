@@ -1,15 +1,16 @@
-// Copyright (c) Microsoft Corporation.  All rights reserved.
-
 package com.example.colorcode.styling;
 
-//import com.aspose.ms.System.Collections.ObjectModel.KeyedCollection;
+import com.aspose.ms.System.Collections.ObjectModel.KeyedCollection;
 import com.example.colorcode.common.ScopeName;
-import com.example.colorcode.styling.Style;
 
 
 /**
  * <p>
  * A dictionary of {@link Style} instances, keyed by the styles' scope name.
+ * </p>
+ *
+ * <p>
+ * Defines the Default Dark Theme.
  * </p>
  */
 
@@ -24,8 +25,7 @@ import com.example.colorcode.styling.Style;
  * Defines the Default Light Theme.
  * </p>
  */
-public /*partial*/ class StyleDictionary extends KeyedCollection<String, Style>
-{
+public /*partial*/ class StyleDictionary extends KeyedCollection<String, Style> {
     /**
      * <p>
      * When implemented in a derived class, extracts the key from the specified element.
@@ -33,8 +33,7 @@ public /*partial*/ class StyleDictionary extends KeyedCollection<String, Style>
      * @return The key for the specified element.
      * @param item The element from which to extract the key.
      */
-    protected /*override*/ String getKeyForItem(Style item)
-    {
+    protected /*override*/ String getKeyForItem(Style item) {
         return item.getScopeName();
     }
 
@@ -77,8 +76,7 @@ public /*partial*/ class StyleDictionary extends KeyedCollection<String, Style>
      * A theme with Dark Colors.
      * </p>
      */
-    public static StyleDictionary getDefaultDark()
-    {
+    public static StyleDictionary getDefaultDark() {
         StyleDictionary tmp0 = new StyleDictionary();
         Style tmp1 = new Style(ScopeName.PlainText);
         tmp1.setForeground(VSDarkPlainText);
@@ -293,13 +291,13 @@ public /*partial*/ class StyleDictionary extends KeyedCollection<String, Style>
         tmp0.addItem(tmp52);
         return tmp0;
     }
+
     /**
      * <p>
      * A theme with Light Colors.
      * </p>
      */
-    public static StyleDictionary getDefaultLight()
-    {
+    public static StyleDictionary getDefaultLight() {
         StyleDictionary tmp0 = new StyleDictionary();
         Style tmp1 = new Style(ScopeName.PlainText);
         tmp1.setForeground(Black);

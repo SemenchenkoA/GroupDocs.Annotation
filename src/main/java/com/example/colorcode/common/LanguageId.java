@@ -1,11 +1,6 @@
-// Copyright (c) Microsoft Corporation.  All rights reserved.
-
 package com.example.colorcode.common;
 
-
-
-public class LanguageId
-{
+public class LanguageId {
     public static final String Asax = "asax";
     public static final String Ashx = "ashx";
     public static final String Aspx = "aspx";

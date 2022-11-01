@@ -1,11 +1,9 @@
-// Copyright (c) Microsoft Corporation.  All rights reserved.
-
 package com.example.colorcode.parsing;
 
-
-import com.aspose.note.system.collections.IList;
+import com.aspose.ms.System.Action;
+import com.aspose.ms.System.Collections.IList;
 import com.example.colorcode.ILanguage;
-import com.example.colorcode.Scope;
+
 
 public interface ILanguageParser
 {

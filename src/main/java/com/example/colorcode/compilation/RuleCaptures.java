@@ -1,26 +1,19 @@
-// Copyright (c) Microsoft Corporation.  All rights reserved.
-
 package com.example.colorcode.compilation;
 
-//import com.aspose.ms.System.Collections.Generic.IGenericDictionary;
-//import com.aspose.ms.System.Collections.Generic.Dictionary;
-//import com.aspose.ms.System.StringExtensions;
+import com.aspose.ms.System.Collections.Generic.IGenericDictionary;
+import com.aspose.ms.System.Collections.Generic.Dictionary;
+import com.aspose.ms.System.StringExtensions;
 
-
-import com.aspose.note.system.collections.Generic.Dictionary;
-import com.aspose.note.system.collections.Generic.IGenericDictionary;
 import com.example.colorcode.common.LanguageId;
 import com.example.colorcode.common.ScopeName;
 
-public class RuleCaptures
-{
-    public static IGenericDictionary<Integer,String> JavaScript;
-    public static IGenericDictionary<Integer,String> CSharpScript;
-    public static IGenericDictionary<Integer,String> VbDotNetScript;
+public class RuleCaptures {
+    public static IGenericDictionary<Integer, String> JavaScript;
+    public static IGenericDictionary<Integer, String> CSharpScript;
+    public static IGenericDictionary<Integer, String> VbDotNetScript;
 
-    private static IGenericDictionary<Integer,String> buildCaptures(String languageId)
-    {
-        Dictionary<Integer,String> tmp0 = new Dictionary<Integer,String>();
+    private static IGenericDictionary<Integer, String> buildCaptures(String languageId) {
+        Dictionary<Integer, String> tmp0 = new Dictionary<Integer, String>();
         tmp0.addItem(1, ScopeName.HtmlTagDelimiter);
         tmp0.addItem(2, ScopeName.HtmlElementName);
         tmp0.addItem(3, ScopeName.HtmlAttributeName);
@@ -47,15 +40,14 @@ public class RuleCaptures
         tmp0.addItem(24, ScopeName.HtmlAttributeValue);
         tmp0.addItem(25, ScopeName.HtmlAttributeName);
         tmp0.addItem(26, ScopeName.HtmlTagDelimiter);
-        tmp0.addItem(27, StringExtensions.format("{0}{1}",ScopeName.LanguagePrefix,languageId));
+        tmp0.addItem(27, StringExtensions.format("{0}{1}", ScopeName.LanguagePrefix, languageId));
         tmp0.addItem(28, ScopeName.HtmlTagDelimiter);
         tmp0.addItem(29, ScopeName.HtmlElementName);
         tmp0.addItem(30, ScopeName.HtmlTagDelimiter);
         return tmp0;
     }
 
-    static /*RuleCaptures()*/
-    {
+    static {
         JavaScript = buildCaptures(LanguageId.JavaScript);
         CSharpScript = buildCaptures(LanguageId.CSharp);
         VbDotNetScript = buildCaptures(LanguageId.VbDotNet);

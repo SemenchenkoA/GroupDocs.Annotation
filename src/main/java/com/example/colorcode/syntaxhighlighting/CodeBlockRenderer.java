@@ -1,13 +1,9 @@
 package com.example.colorcode.syntaxhighlighting;
 
-//import com.aspose.ms.lang.Operators;
-//import com.example.colorcode.HtmlClassFormatter;
-//import com.aspose.ms.System.StringExtensions;
-//import com.aspose.ms.System.Console;
-//import com.example.colorcode.Languages;
-//import com.aspose.ms.System.Text.msStringBuilder;
-
-
+import com.aspose.ms.System.Console;
+import com.aspose.ms.System.StringExtensions;
+import com.aspose.ms.System.Text.msStringBuilder;
+import com.aspose.ms.lang.Operators;
 import com.example.colorcode.Languages;
 import com.example.colorcode.html.HtmlClassFormatter;
 
@@ -76,7 +72,7 @@ class SyntaxHighlightingCodeBlockRenderer extends HtmlObjectRenderer<CodeBlock>
                 code.appendLine();
             }
 
-            code.Append(lineText);
+            code.append(lineText);
         }
         return code.toString();
     }

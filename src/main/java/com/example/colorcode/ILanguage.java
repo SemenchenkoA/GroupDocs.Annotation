@@ -1,16 +1,13 @@
-// Copyright (c) Microsoft Corporation.  All rights reserved.
-
 package com.example.colorcode;
 
-import com.aspose.note.system.collections.Generic.IGenericList;
+import com.aspose.ms.System.Collections.Generic.IGenericList;
 
 /**
  * <p>
  * Defines how ColorCode will parse the source code of a given language.
  * </p>
  */
-public interface ILanguage
-{
+public interface ILanguage {
     /**
      * <p>
      * Gets the identifier of the language (e.g., csharp).

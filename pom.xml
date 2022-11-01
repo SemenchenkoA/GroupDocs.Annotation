@@ -18,6 +18,16 @@
             <version>22.9</version>
             <classifier>jdk17</classifier>
         </dependency>
+        <dependency>
+            <groupId>com.aspose.ms</groupId>
+            <artifactId>aspose.ms-jdk-system</artifactId>
+            <version>6.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.aspose.ms</groupId>
+            <artifactId>aspose.ms-jdk-core</artifactId>
+            <version>6.0.0</version>
+        </dependency>
     </dependencies>
 
     <properties>

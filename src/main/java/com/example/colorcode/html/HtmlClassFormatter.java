@@ -1,85 +1,89 @@
 package com.example.colorcode.html;
 
-//import com.example.colorcode.ExtensionMethods;
-//import com.aspose.ms.System.IDisposable;
-//import java.util.Iterator;
-//import com.aspose.ms.lang.Operators;
-//import com.aspose.ms.System.IO.TextWriter;
-//import com.aspose.ms.System.Text.msStringBuilder;
-//import com.aspose.ms.System.IO.StringWriter;
-//import com.aspose.ms.System.Collections.Generic.IGenericList;
-//import com.aspose.ms.System.Collections.Generic.List;
-//import com.aspose.ms.System.Comparison;
-//import com.aspose.ms.System.Int32Extensions;
-//import com.aspose.ms.System.StringExtensions;
-//import com.aspose.ms.System.Collections.Generic.IGenericCollection;
+import com.aspose.ms.System.Collections.Generic.IGenericCollection;
+import com.aspose.ms.System.Collections.Generic.IGenericList;
+import com.aspose.ms.System.Collections.Generic.List;
+import com.aspose.ms.System.Comparison;
+import com.aspose.ms.System.IDisposable;
+import com.aspose.ms.System.IO.StringWriter;
+import com.aspose.ms.System.IO.TextWriter;
+import com.aspose.ms.System.Int32Extensions;
+import com.aspose.ms.System.StringExtensions;
+import com.aspose.ms.System.Text.msStringBuilder;
 
-
-import com.aspose.note.system.collections.Generic.IGenericCollection;
-import com.aspose.note.system.collections.Generic.IGenericList;
-import com.aspose.note.system.collections.Generic.List;
+import com.aspose.ms.lang.Operators;
 import com.example.colorcode.CodeColorizerBase;
 import com.example.colorcode.ILanguage;
-import com.example.colorcode.Scope;
-import com.example.colorcode.Style;
 import com.example.colorcode.common.ExtensionMethods;
 import com.example.colorcode.common.Guard;
 import com.example.colorcode.common.ScopeName;
 import com.example.colorcode.common.TextInsertion;
-import com.sun.org.apache.xalan.internal.xsltc.runtime.Operators;
+import com.example.colorcode.parsing.ILanguageParser;
+import com.example.colorcode.parsing.Scope;
+import com.example.colorcode.styling.Style;
+import com.example.colorcode.styling.StyleDictionary;
 
-import java.io.StringWriter;
 import java.util.Iterator;
+
+import static com.aspose.ms.System.Security.Principal.TokenAccessLevels.Write;
+
 
 /**
  * <p>
  * Creates a {@link HtmlClassFormatter}, for creating HTML to display Syntax Highlighted code.
  * </p>
  */
-public class HtmlClassFormatter extends CodeColorizerBase
-{
+public class HtmlClassFormatter extends CodeColorizerBase {
     /**
      * <p>
      * Creates a {@link HtmlClassFormatter}, for creating HTML to display Syntax Highlighted code, with Styles applied via CSS.
      * </p>
-     * @param Style The Custom styles to Apply to the formatted Code.
+     *
+     * @param Style          The Custom styles to Apply to the formatted Code.
      * @param languageParser The language parser that the {@link HtmlClassFormatter} instance will use for its lifetime.
      */
-    public HtmlClassFormatter(com.example.colorcode.StyleDictionary Style = null, com.example.colorcode.ILanguageParser languageParser = null)
-    {
-    	super(Style, languageParser);
-	
+    public HtmlClassFormatter(StyleDictionary Style, ILanguageParser languageParser) {
+        super(Style, languageParser);
+
     }
 
-    private TextWriter getWriter(){ return auto_Writer; }
-    private void setWriter(TextWriter value){ auto_Writer = value; }
+
+    private TextWriter getWriter() {
+        return auto_Writer;
+    }
+
+    private void setWriter(TextWriter value) {
+        auto_Writer = value;
+    }
+
     private TextWriter auto_Writer;
 
     /**
      * <p>
      * Creates the HTML Markup, which can be saved to a .html file.
      * </p>
-     * @return Colorised HTML Markup.
+     *
      * @param sourceCode The source code to colorize.
-     * @param language The language to use to colorize the source code.
+     * @param language   The language to use to colorize the source code.
+     * @return Colorised HTML Markup.
      */
-    public final String getHtmlString(String sourceCode, ILanguage language)
-    {
+    public final String getHtmlString(String sourceCode, ILanguage language) {
         msStringBuilder buffer = new msStringBuilder(sourceCode.length() * 2);
 
         final TextWriter writer = new StringWriter(buffer);
-        try /*JAVA: was using*/
-        {
+        try /*JAVA: was using*/ {
             setWriter(writer);
             writeHeader(language);
 
-            languageParser.Parse(sourceCode, language, (parsedSourceCode,captures) => Write(parsedSourceCode, captures));
+            languageParser.parse(sourceCode, language, (parsedSourceCode, captures) =>Write(parsedSourceCode, captures))
+            ;
 
             writeFooter(language);
 
             writer.flush();
+        } finally {
+            if (writer != null) ((IDisposable) writer).dispose();
         }
-        finally { if (writer != null) ((IDisposable)writer).dispose(); }
 
         return buffer.toString();
     }
@@ -89,17 +93,16 @@ public class HtmlClassFormatter extends CodeColorizerBase
      * Creates the CSS Markup, which can be saved to a .CSS file. <p></p>
      * This is required for Coloring the Html output. Be sure to reference the File from the HTML, or insert it inline to the Head.
      * </p>
-     * @return 
+     *
+     * @return
      */
-    public final String getCSSString()
-    {
+    public final String getCSSString() {
         msStringBuilder str = new msStringBuilder();
 
-        com.example.colorcode.Style plainText = Styles.get_Item(ScopeName.PlainText);
-        if (!String.IsNullOrWhiteSpace(plainText? :)) str.append("body{{background-color:{plainText.Background};}}");
+        Style plainText = styles.get_Item(ScopeName.PlainText);
+        if (!String.IsNullOrWhiteSpace(plainText ? :))str.append("body{{background-color:{plainText.Background};}}");
 
-        for (com.example.colorcode.Style style : (Iterable<com.example.colorcode.Style>) Styles)
-        {
+        for (Style style : (Iterable<Style>) styles) {
             str.append(" .{style.ReferenceName}{{");
 
             if (!String.IsNullOrWhiteSpace(style.getForeground()))
@@ -120,58 +123,50 @@ public class HtmlClassFormatter extends CodeColorizerBase
         return str.toString();
     }
 
-    protected /*override*/ void write(String parsedSourceCode, IGenericList<com.example.colorcode.Scope> scopes)
-    {
+    protected /*override*/ void write(String parsedSourceCode, IGenericList<Scope> scopes) {
         List<TextInsertion> styleInsertions = new List<TextInsertion>();
 
         //foreach to while statements conversion
-        Iterator tmp0 = ( scopes).iterator();
-        try
-        {
-          while (tmp0.hasNext())
-          {
-            com.example.colorcode.Scope scope = (com.example.colorcode.Scope)tmp0.next();
-            getStyleInsertionsForCapturedStyle(scope, styleInsertions);
-          }
-        }
-        finally
-        {
-          if (Operators.is(tmp0, IDisposable.class))
-            ((IDisposable)tmp0).dispose();
+        Iterator tmp0 = (scopes).iterator();
+        try {
+            while (tmp0.hasNext()) {
+                Scope scope = (Scope) tmp0.next();
+                getStyleInsertionsForCapturedStyle(scope, styleInsertions);
+            }
+        } finally {
+            if (Operators.is(tmp0, IDisposable.class))
+                ((IDisposable) tmp0).dispose();
         }
 
-        ExtensionMethods.sortStable(styleInsertions,  new Comparison<TextInsertion>() {
-        	public int invoke(TextInsertion x,TextInsertion y){return   Int32Extensions.compareTo(x.getIndex(), y.getIndex());}
+        ExtensionMethods.sortStable(styleInsertions, new Comparison<TextInsertion>() {
+            public int invoke(TextInsertion x, TextInsertion y) {
+                return Int32Extensions.compareTo(x.getIndex(), y.getIndex());
+            }
         });
 
         int offset = 0;
 
         //foreach to while statements conversion
-        Iterator tmp1 = ( styleInsertions).iterator();
-        try
-        {
-          while (tmp1.hasNext())
-          {
-            TextInsertion styleInsertion = (TextInsertion)tmp1.next();
-            getWriter().Write(WebUtility.HtmlEncode(StringExtensions.substring(parsedSourceCode, offset, styleInsertion.getIndex() - offset)));
-            if (StringExtensions.isNullOrEmpty(styleInsertion.getText()))
-                buildSpanForCapturedStyle(styleInsertion.getScope());
-            else
-                getWriter().write(styleInsertion.getText());
-            offset = styleInsertion.getIndex();
-          }
-        }
-        finally
-        {
-          if (Operators.is(tmp1, IDisposable.class))
-            ((IDisposable)tmp1).dispose();
+        Iterator tmp1 = (styleInsertions).iterator();
+        try {
+            while (tmp1.hasNext()) {
+                TextInsertion styleInsertion = (TextInsertion) tmp1.next();
+                getWriter().write(WebUtility.HtmlEncode(StringExtensions.substring(parsedSourceCode, offset, styleInsertion.getIndex() - offset)));
+                if (StringExtensions.isNullOrEmpty(styleInsertion.getText()))
+                    buildSpanForCapturedStyle(styleInsertion.getScope());
+                else
+                    getWriter().write(styleInsertion.getText());
+                offset = styleInsertion.getIndex();
+            }
+        } finally {
+            if (Operators.is(tmp1, IDisposable.class))
+                ((IDisposable) tmp1).dispose();
         }
 
-        getWriter().Write(WebUtility.HtmlEncode(StringExtensions.substring(parsedSourceCode, offset)));
+        getWriter().write(WebUtility.HtmlEncode(StringExtensions.substring(parsedSourceCode, offset)));
     }
 
-    private void writeFooter(ILanguage language)
-    {
+    private void writeFooter(ILanguage language) {
         Guard.argNotNull(language, "language");
 
         getWriter().writeLine();
@@ -179,8 +174,7 @@ public class HtmlClassFormatter extends CodeColorizerBase
         writeHeaderDivEnd();
     }
 
-    private void writeHeader(ILanguage language)
-    {
+    private void writeHeader(ILanguage language) {
         Guard.argNotNull(language, "language");
 
         writeHeaderDivStart(language);
@@ -188,27 +182,22 @@ public class HtmlClassFormatter extends CodeColorizerBase
         getWriter().writeLine();
     }
 
-    private static void getStyleInsertionsForCapturedStyle(com.example.colorcode.Scope scope, IGenericCollection<TextInsertion> styleInsertions)
-    {
+    private static void getStyleInsertionsForCapturedStyle(Scope scope, IGenericCollection<TextInsertion> styleInsertions) {
         TextInsertion tmp0 = new TextInsertion();
         tmp0.setIndex(scope.getIndex());
         tmp0.setScope(scope);
         styleInsertions.addItem(tmp0);
 
         //foreach to while statements conversion
-        Iterator tmp2 = ( scope.getChildren()).iterator();
-        try
-        {
-          while (tmp2.hasNext())
-          {
-            com.example.colorcode.Scope childScope = (Scope)tmp2.next();
-            getStyleInsertionsForCapturedStyle(childScope, styleInsertions);
-          }
-        }
-        finally
-        {
-          if (Operators.is(tmp2, IDisposable.class))
-            ((IDisposable)tmp2).dispose();
+        Iterator tmp2 = (scope.getChildren()).iterator();
+        try {
+            while (tmp2.hasNext()) {
+                Scope childScope = (Scope) tmp2.next();
+                getStyleInsertionsForCapturedStyle(childScope, styleInsertions);
+            }
+        } finally {
+            if (Operators.is(tmp2, IDisposable.class))
+                ((IDisposable) tmp2).dispose();
         }
         TextInsertion tmp1 = new TextInsertion();
         tmp1.setIndex(scope.getIndex() + scope.getLength());
@@ -217,13 +206,11 @@ public class HtmlClassFormatter extends CodeColorizerBase
         styleInsertions.addItem(tmp1);
     }
 
-    private void buildSpanForCapturedStyle(Scope scope)
-    {
+    private void buildSpanForCapturedStyle(Scope scope) {
         String cssClassName = "";
 
-        if (Styles.containsItem(scope.getName()))
-        {
-            Style style = Styles.get_Item(scope.getName());
+        if (styles.containsItem(scope.getName())) {
+            Style style = styles.get_Item(scope.getName());
 
             cssClassName = style.getReferenceName();
         }
@@ -231,41 +218,33 @@ public class HtmlClassFormatter extends CodeColorizerBase
         writeElementStart("span", cssClassName);
     }
 
-    private void writeHeaderDivEnd()
-    {
+    private void writeHeaderDivEnd() {
         writeElementEnd("div");
     }
 
-    private void writeElementEnd(String elementName)
-    {
+    private void writeElementEnd(String elementName) {
         getWriter().write("</{0}>", elementName);
     }
 
-    private void writeHeaderPreEnd()
-    {
+    private void writeHeaderPreEnd() {
         writeElementEnd("pre");
     }
 
-    private void writeHeaderPreStart()
-    {
+    private void writeHeaderPreStart() {
         writeElementStart("pre");
     }
 
-    private void writeHeaderDivStart(ILanguage language)
-    {
+    private void writeHeaderDivStart(ILanguage language) {
         writeElementStart("div", language.getCssClassName());
     }
 
-    private void writeElementStart(String elementName)
-    {
+    private void writeElementStart(String elementName) {
         writeElementStart(elementName, "");
     }
 
-    private void writeElementStart(String elementName, String cssClassName)
-    {
+    private void writeElementStart(String elementName, String cssClassName) {
         getWriter().write("<{0}", elementName);
-        if (!StringExtensions.isNullOrEmpty(cssClassName))
-        {
+        if (!StringExtensions.isNullOrEmpty(cssClassName)) {
             getWriter().write(" class=\"{0}\"", cssClassName);
         }
         getWriter().write(">");

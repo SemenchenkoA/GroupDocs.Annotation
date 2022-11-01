@@ -1,11 +1,6 @@
-// Copyright (c) Microsoft Corporation.  All rights reserved.
-
 package com.example.colorcode.common;
 
-
-
-public class ScopeName
-{
+public class ScopeName {
     public static final String ClassName = "Class Name";
     public static final String Comment = "Comment";
     public static final String CssPropertyName = "CSS Property Name";
