@@ -1,6 +1,7 @@
 package com.example.colorcode.parsing;
 
 import com.aspose.ms.System.*;
+import com.aspose.ms.System.Collections.ArrayList;
 import com.aspose.ms.System.Collections.Generic.IGenericCollection;
 import com.aspose.ms.System.Collections.Generic.IGenericList;
 import com.aspose.ms.System.Collections.Generic.List;
@@ -31,7 +32,7 @@ public class LanguageParser implements ILanguageParser {
 
     public final void parse(String sourceCode,
                             ILanguage language,
-                            Action<String, IList<Scope>> parseHandler) {
+                            Action<List> parseHandler) {
         if (StringExtensions.isNullOrEmpty(sourceCode))
             return;
 
@@ -42,24 +43,28 @@ public class LanguageParser implements ILanguageParser {
 
     private void parse(String sourceCode,
                        CompiledLanguage compiledLanguage,
-                       Action<String, IList<Scope>> parseHandler) {
+                       Action<List> parseHandler) {
         Match regexMatch = compiledLanguage.getRegexInternal().match(sourceCode);
 
         if (!regexMatch.getSuccess())
-            parseHandler(sourceCode, new List<Scope>());
+            //parseHandler(sourceCode, new List<Scope>());
+            parseHandler.invoke(new List<Scope>());
         else {
             int currentIndex = 0;
 
             while (regexMatch.getSuccess()) {
                 String sourceCodeBeforeMatch = StringExtensions.substring(sourceCode, currentIndex, regexMatch.getIndex() - currentIndex);
                 if (!StringExtensions.isNullOrEmpty(sourceCodeBeforeMatch))
-                    parseHandler(sourceCodeBeforeMatch, new List<Scope>());
+                    //parseHandler(sourceCodeBeforeMatch, new List<Scope>());
+                    parseHandler.invoke(new List<Scope>());
 
                 String matchedSourceCode = StringExtensions.substring(sourceCode, regexMatch.getIndex(), regexMatch.getLength());
                 if (!StringExtensions.isNullOrEmpty(matchedSourceCode)) {
                     List<Scope> capturedStylesForMatchedFragment = getCapturedStyles(regexMatch, regexMatch.getIndex(), compiledLanguage);
                     List<Scope> capturedStyleTree = createCapturedStyleTree(capturedStylesForMatchedFragment);
-                    parseHandler(matchedSourceCode, capturedStyleTree);
+
+                    //parseHandler(matchedSourceCode, capturedStyleTree);
+                    parseHandler.invoke(capturedStyleTree);
                 }
 
                 currentIndex = regexMatch.getIndex() + regexMatch.getLength();
@@ -68,7 +73,7 @@ public class LanguageParser implements ILanguageParser {
 
             String sourceCodeAfterAllMatches = StringExtensions.substring(sourceCode, currentIndex);
             if (!StringExtensions.isNullOrEmpty(sourceCodeAfterAllMatches))
-                parseHandler(sourceCodeAfterAllMatches, new List<Scope>());
+                parseHandler.invoke(/*sourceCodeAfterAllMatches,*/ new List<Scope>());
         }
     }
 

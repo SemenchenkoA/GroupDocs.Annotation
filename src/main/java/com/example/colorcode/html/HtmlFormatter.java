@@ -1,15 +1,12 @@
 package com.example.colorcode.html;
 
+import com.aspose.ms.System.*;
 import com.aspose.ms.System.Collections.Generic.IGenericCollection;
 import com.aspose.ms.System.Collections.Generic.IGenericList;
 import com.aspose.ms.System.Collections.Generic.List;
-import com.aspose.ms.System.Comparison;
-import com.aspose.ms.System.IDisposable;
 import com.aspose.ms.System.IO.StringWriter;
 import com.aspose.ms.System.IO.TextWriter;
 
-import com.aspose.ms.System.Int32Extensions;
-import com.aspose.ms.System.StringExtensions;
 import com.aspose.ms.System.Text.msStringBuilder;
 import com.aspose.ms.lang.Operators;
 import com.example.colorcode.CodeColorizerBase;
@@ -20,7 +17,6 @@ import com.example.colorcode.parsing.ILanguageParser;
 import com.example.colorcode.parsing.Scope;
 import com.example.colorcode.styling.Style;
 import com.example.colorcode.styling.StyleDictionary;
-
 
 import java.util.Iterator;
 
@@ -70,8 +66,15 @@ public class HtmlFormatter extends CodeColorizerBase {
             setWriter(writer);
             writeHeader(language);
 
-            languageParser.parse(sourceCode, language, (parsedSourceCode, captures) =>write(parsedSourceCode, captures))
-            ;
+            //languageParser.parse(sourceCode, language, (parsedSourceCode, captures) -> write((String) parsedSourceCode, (IGenericList<Scope>)captures));
+            Action<List> parseHandler = new Action<List>() {
+                @Override
+                public void invoke(List list) {
+                    write(sourceCode, new List<>());
+                }
+            };
+
+            languageParser.parse(sourceCode, language, parseHandler);
 
             writeFooter(language);
 
@@ -82,6 +85,8 @@ public class HtmlFormatter extends CodeColorizerBase {
 
         return buffer.toString();
     }
+
+
 
     protected void write(String parsedSourceCode, IGenericList<Scope> scopes) {
         List<TextInsertion> styleInsertions = new List<TextInsertion>();
@@ -112,7 +117,7 @@ public class HtmlFormatter extends CodeColorizerBase {
             while (tmp1.hasNext()) {
                 TextInsertion styleInsertion = (TextInsertion) tmp1.next();
                 String text = StringExtensions.substring(parsedSourceCode, offset, styleInsertion.getIndex() - offset);
-                getWriter().write(WebUtility.HtmlEncode(text));
+                getWriter().write(ExtensionMethods.encodeHTML(text));
                 if (StringExtensions.isNullOrEmpty(styleInsertion.getText()))
                     buildSpanForCapturedStyle(styleInsertion.getScope());
                 else
@@ -124,7 +129,7 @@ public class HtmlFormatter extends CodeColorizerBase {
                 ((IDisposable) tmp1).dispose();
         }
 
-        getWriter().write(WebUtility.HtmlEncode(StringExtensions.substring(parsedSourceCode, offset)));
+        getWriter().write(ExtensionMethods.encodeHTML(StringExtensions.substring(parsedSourceCode, offset)));
     }
 
     private void writeFooter(ILanguage language) {
@@ -169,7 +174,7 @@ public class HtmlFormatter extends CodeColorizerBase {
         boolean italic = false;
         boolean bold = false;
 
-        if (styles.containsItem(scope.getName())) {
+        if (styles.containsKey(scope.getName())) {
             Style style = styles.get_Item(scope.getName());
 
             foreground = style.getForeground();
@@ -194,33 +199,34 @@ public class HtmlFormatter extends CodeColorizerBase {
     }
 
     private void writeHeaderPreStart() {
-        writeElementStart("pre");
+        writeElementStart("pre", null, null, false, false);
     }
 
     private void writeHeaderDivStart() {
         String foreground = StringExtensions.Empty;
         String background = StringExtensions.Empty;
 
-        if (styles.containsItem(ScopeName.PlainText)) {
+        if (styles.containsKey(ScopeName.PlainText)) {
             Style plainTextStyle = styles.get_Item(ScopeName.PlainText);
 
             foreground = plainTextStyle.getForeground();
             background = plainTextStyle.getBackground();
         }
 
-        writeElementStart("div", foreground, background);
+        writeElementStart("div", foreground, background, false, false);
     }
 
     private void writeElementStart(String elementName, String foreground, String background, boolean italic, boolean bold) {
         getWriter().write("<{0}", elementName);
 
-        if (!String.IsNullOrWhiteSpace(foreground) || !String.IsNullOrWhiteSpace(background) || italic || bold) {
+
+        if (!ExtensionMethods.isNullOrWhiteSpace(foreground) || !ExtensionMethods.isNullOrWhiteSpace(background) || italic || bold) {
             getWriter().write(" style=\"");
 
-            if (!String.IsNullOrWhiteSpace(foreground))
+            if (!ExtensionMethods.isNullOrWhiteSpace(foreground))
                 getWriter().write("color:{0};", ExtensionMethods.toHtmlColor(foreground));
 
-            if (!String.IsNullOrWhiteSpace(background))
+            if (!ExtensionMethods.isNullOrWhiteSpace(background))
                 getWriter().write("background-color:{0};", ExtensionMethods.toHtmlColor(background));
 
             if (italic)

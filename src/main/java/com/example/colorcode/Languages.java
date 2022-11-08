@@ -18,7 +18,7 @@ public class Languages {
     static final com.example.colorcode.common.LanguageRepository LanguageRepository;
     static final Dictionary<String, ILanguage> LoadedLanguages;
     static Dictionary<String, CompiledLanguage> CompiledLanguages;
-    static ReaderWriterLockSlim CompileLock;
+    static Object CompileLock;
 
     /**
      * <p>
@@ -240,7 +240,7 @@ public class Languages {
     }
 
     private static <T extends ILanguage /* new() */> void load(Class<T> typeOfT) {
-        load(Operators.createInstance(typeOfT));
+        load((ILanguage) Operators.defaultValue(typeOfT));
     }
 
     /**
@@ -261,7 +261,7 @@ public class Languages {
         LoadedLanguages = new Dictionary<String, ILanguage>();
         CompiledLanguages = new Dictionary<String, CompiledLanguage>();
         LanguageRepository = new LanguageRepository(LoadedLanguages);
-        CompileLock = new ReaderWriterLockSlim();
+        CompileLock = new Object();
 
         load(JavaScript.class);
         load(Html.class);

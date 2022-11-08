@@ -13,40 +13,40 @@ public interface ILanguage {
      * Gets the identifier of the language (e.g., csharp).
      * </p>
      */
-    public String getId();
+    String getId();
 
     /**
      * <p>
      * Gets the first line pattern (regex) to use when determining if the language matches a source text.
      * </p>
      */
-    public String getFirstLinePattern();
+    String getFirstLinePattern();
 
     /**
      * <p>
      * Gets the "friendly" name of the language (e.g., C#).
      * </p>
      */
-    public String getName();
+    String getName();
 
     /**
      * <p>
      * Gets the collection of language rules in the language.
      * </p>
      */
-    public IGenericList<LanguageRule> getRules();
+    IGenericList<LanguageRule> getRules();
 
     /**
      * <p>
      * Get the CSS class name to use for a language
      * </p>
      */
-    public String getCssClassName();
+    String getCssClassName();
 
     /**
      * <p>
      * Returns true if the specified string is an alias for the language
      * </p>
      */
-    public boolean hasAlias(String lang);
+    boolean hasAlias(String lang);
 }

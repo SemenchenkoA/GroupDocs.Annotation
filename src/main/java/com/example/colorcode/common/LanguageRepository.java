@@ -9,11 +9,10 @@ import com.example.colorcode.ILanguage;
 
 public class LanguageRepository implements ILanguageRepository {
     private final Dictionary<String, ILanguage> loadedLanguages;
-    private final ReaderWriterLockSlim loadLock;
+    private Object mutex = new Object();
 
     public LanguageRepository(Dictionary<String, ILanguage> loadedLanguages) {
         this.loadedLanguages = loadedLanguages;
-        loadLock = new ReaderWriterLockSlim();
     }
 
     public final IGenericEnumerable<ILanguage> getAll() {
@@ -23,21 +22,18 @@ public class LanguageRepository implements ILanguageRepository {
     public final ILanguage findById(String languageId) {
         Guard.argNotNullAndNotEmpty(languageId, "languageId");
 
-        ILanguage language = null;
+        synchronized (mutex){
+            ILanguage language = null;
+            Dictionary.ValueCollection<String, ILanguage> vc = loadedLanguages.getValues();
 
-        loadLock.EnterReadLock();
+            for(ILanguage il : vc){
+                if(il.getId().equalsIgnoreCase(languageId) || il.hasAlias(languageId)){
+                    language = il;
+                }
+            }
 
-        try {
-            // If we have a matching name for the language then use it
-            // otherwise check if any languages have that string as an
-            // alias. For example: "js" is an alias for Javascript.
-            language = loadedLanguages.FirstOrDefault((x) = > (x.Key.ToLower() == languageId.ToLower()) ||
-                    (x.Value.HasAlias(languageId))).Value;
-        } finally {
-            loadLock.ExitReadLock();
+            return language;
         }
-
-        return language;
     }
 
     public final void load(ILanguage language) {
@@ -46,12 +42,8 @@ public class LanguageRepository implements ILanguageRepository {
         if (StringExtensions.isNullOrEmpty(language.getId()))
             throw new ArgumentException("The language identifier must not be null or empty.", "language");
 
-        loadLock.EnterWriteLock();
-
-        try {
+        synchronized (mutex){
             loadedLanguages.set_Item(language.getId(), language);
-        } finally {
-            loadLock.ExitWriteLock();
         }
     }
 }

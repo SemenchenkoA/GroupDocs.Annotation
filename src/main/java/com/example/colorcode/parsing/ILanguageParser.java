@@ -1,13 +1,14 @@
 package com.example.colorcode.parsing;
 
 import com.aspose.ms.System.Action;
+import com.aspose.ms.System.Collections.Generic.List;
 import com.aspose.ms.System.Collections.IList;
 import com.example.colorcode.ILanguage;
 
-
+@FunctionalInterface
 public interface ILanguageParser
 {
-    public void parse(String sourceCode,
+    void parse(String sourceCode,
                ILanguage language,
-               Action<String, IList<Scope>> parseHandler);
+               Action<List> parseHandler);
 }

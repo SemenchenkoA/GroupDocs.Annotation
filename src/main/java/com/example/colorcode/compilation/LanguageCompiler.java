@@ -21,9 +21,9 @@ import java.util.Iterator;
 public class LanguageCompiler implements ILanguageCompiler {
     private static final Regex numberOfCapturesRegex = new Regex("(?x)(?<!(\\\\|(?!\\\\)\\(\\?))\\((?!\\?)", RegexOptions.Compiled);
     private final Dictionary<String, CompiledLanguage> compiledLanguages;
-    private final ReaderWriterLockSlim compileLock;
+    private final Object compileLock;
 
-    public LanguageCompiler(Dictionary<String, CompiledLanguage> compiledLanguages, ReaderWriterLockSlim compileLock) {
+    public LanguageCompiler(Dictionary<String, CompiledLanguage> compiledLanguages, Object compileLock) {
         this.compiledLanguages = compiledLanguages;
         this.compileLock = compileLock;
     }
@@ -36,40 +36,25 @@ public class LanguageCompiler implements ILanguageCompiler {
 
         CompiledLanguage compiledLanguage;
 
-        compileLock.EnterReadLock();
-        try {
-            // for performance reasons we should first try with
-            // only a read lock since the majority of the time
-            // it'll be created already and upgradeable lock blocks
+        synchronized (compileLock) {
             if (compiledLanguages.containsKey(language.getId()))
                 return compiledLanguages.get_Item(language.getId());
-        } finally {
-            compileLock.ExitReadLock();
         }
 
-        compileLock.EnterUpgradeableReadLock();
-        try {
+        synchronized (compileLock) {
             if (compiledLanguages.containsKey(language.getId()))
                 compiledLanguage = compiledLanguages.get_Item(language.getId());
             else {
-                compileLock.EnterWriteLock();
+                if (StringExtensions.isNullOrEmpty(language.getName()))
+                    throw new ArgumentException("The language name must not be null or empty.", "language");
 
-                try {
-                    if (StringExtensions.isNullOrEmpty(language.getName()))
-                        throw new ArgumentException("The language name must not be null or empty.", "language");
+                if (language.getRules() == null || language.getRules().size() == 0)
+                    throw new ArgumentException("The language rules collection must not be empty.", "language");
 
-                    if (language.getRules() == null || language.getRules().size() == 0)
-                        throw new ArgumentException("The language rules collection must not be empty.", "language");
+                compiledLanguage = compileLanguage(language);
 
-                    compiledLanguage = compileLanguage(language);
-
-                    compiledLanguages.addItem(compiledLanguage.getId(), compiledLanguage);
-                } finally {
-                    compileLock.ExitWriteLock();
-                }
+                compiledLanguages.addItem(compiledLanguage.getId(), compiledLanguage);
             }
-        } finally {
-            compileLock.ExitUpgradeableReadLock();
         }
 
         return compiledLanguage;

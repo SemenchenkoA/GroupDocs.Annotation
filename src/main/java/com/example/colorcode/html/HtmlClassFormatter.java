@@ -1,14 +1,12 @@
 package com.example.colorcode.html;
 
+import com.aspose.ms.System.*;
 import com.aspose.ms.System.Collections.Generic.IGenericCollection;
 import com.aspose.ms.System.Collections.Generic.IGenericList;
 import com.aspose.ms.System.Collections.Generic.List;
-import com.aspose.ms.System.Comparison;
-import com.aspose.ms.System.IDisposable;
+import com.aspose.ms.System.Collections.IList;
 import com.aspose.ms.System.IO.StringWriter;
 import com.aspose.ms.System.IO.TextWriter;
-import com.aspose.ms.System.Int32Extensions;
-import com.aspose.ms.System.StringExtensions;
 import com.aspose.ms.System.Text.msStringBuilder;
 
 import com.aspose.ms.lang.Operators;
@@ -25,7 +23,7 @@ import com.example.colorcode.styling.StyleDictionary;
 
 import java.util.Iterator;
 
-import static com.aspose.ms.System.Security.Principal.TokenAccessLevels.Write;
+import static com.example.colorcode.html.ExtensionMethods.encodeHTML;
 
 
 /**
@@ -75,8 +73,15 @@ public class HtmlClassFormatter extends CodeColorizerBase {
             setWriter(writer);
             writeHeader(language);
 
-            languageParser.parse(sourceCode, language, (parsedSourceCode, captures) =>Write(parsedSourceCode, captures))
-            ;
+            //languageParser.parse(sourceCode, language, (parsedSourceCode, captures) =>write(parsedSourceCode, captures));
+            Action<List> parseHandler = new Action<List>() {
+                @Override
+                public void invoke(List list) {
+                    write(sourceCode, new List<>());
+                }
+            };
+
+            languageParser.parse(sourceCode, language, parseHandler);
 
             writeFooter(language);
 
@@ -100,15 +105,18 @@ public class HtmlClassFormatter extends CodeColorizerBase {
         msStringBuilder str = new msStringBuilder();
 
         Style plainText = styles.get_Item(ScopeName.PlainText);
-        if (!String.IsNullOrWhiteSpace(plainText ? :))str.append("body{{background-color:{plainText.Background};}}");
 
-        for (Style style : (Iterable<Style>) styles) {
+        if(!com.example.colorcode.html.ExtensionMethods.isNullOrWhiteSpace(plainText.getBackground())){
+            str.append("body{{background-color:{plainText.Background};}}");
+        }
+
+        for (Style style : styles) {
             str.append(" .{style.ReferenceName}{{");
 
-            if (!String.IsNullOrWhiteSpace(style.getForeground()))
+            if(!com.example.colorcode.html.ExtensionMethods.isNullOrWhiteSpace(style.getForeground()))
                 str.append("color:{style.Foreground.ToHtmlColor()};");
 
-            if (!String.IsNullOrWhiteSpace(style.getBackground()))
+            if(!com.example.colorcode.html.ExtensionMethods.isNullOrWhiteSpace(style.getBackground()))
                 str.append("color:{style.Background.ToHtmlColor()};");
 
             if (style.getItalic())
@@ -123,8 +131,8 @@ public class HtmlClassFormatter extends CodeColorizerBase {
         return str.toString();
     }
 
-    protected /*override*/ void write(String parsedSourceCode, IGenericList<Scope> scopes) {
-        List<TextInsertion> styleInsertions = new List<TextInsertion>();
+    protected void write(String parsedSourceCode, IGenericList<Scope> scopes) {
+        List<TextInsertion> styleInsertions = new List<>();
 
         //foreach to while statements conversion
         Iterator tmp0 = (scopes).iterator();
@@ -151,7 +159,7 @@ public class HtmlClassFormatter extends CodeColorizerBase {
         try {
             while (tmp1.hasNext()) {
                 TextInsertion styleInsertion = (TextInsertion) tmp1.next();
-                getWriter().write(WebUtility.HtmlEncode(StringExtensions.substring(parsedSourceCode, offset, styleInsertion.getIndex() - offset)));
+                getWriter().write(encodeHTML(StringExtensions.substring(parsedSourceCode, offset, styleInsertion.getIndex() - offset)));
                 if (StringExtensions.isNullOrEmpty(styleInsertion.getText()))
                     buildSpanForCapturedStyle(styleInsertion.getScope());
                 else
@@ -163,7 +171,7 @@ public class HtmlClassFormatter extends CodeColorizerBase {
                 ((IDisposable) tmp1).dispose();
         }
 
-        getWriter().write(WebUtility.HtmlEncode(StringExtensions.substring(parsedSourceCode, offset)));
+        getWriter().write(encodeHTML(StringExtensions.substring(parsedSourceCode, offset)));
     }
 
     private void writeFooter(ILanguage language) {
@@ -209,7 +217,7 @@ public class HtmlClassFormatter extends CodeColorizerBase {
     private void buildSpanForCapturedStyle(Scope scope) {
         String cssClassName = "";
 
-        if (styles.containsItem(scope.getName())) {
+        if (styles.containsKey(scope.getName())) {
             Style style = styles.get_Item(scope.getName());
 
             cssClassName = style.getReferenceName();
