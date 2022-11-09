@@ -17,7 +17,6 @@ import com.example.colorcode.common.Guard;
 
 import java.util.Iterator;
 
-
 public class LanguageCompiler implements ILanguageCompiler {
     private static final Regex numberOfCapturesRegex = new Regex("(?x)(?<!(\\\\|(?!\\\\)\\(\\?))\\((?!\\?)", RegexOptions.Compiled);
     private final Dictionary<String, CompiledLanguage> compiledLanguages;
